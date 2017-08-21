@@ -266,11 +266,11 @@ module.exports = class extends Generator {
     this.fs.copyTpl(this.templatePath('puppet/environments/local/manifests/default.pp'), this.destinationPath('puppet/environments/local/manifests/default.pp'), tplData);
     this.fs.copy(this.templatePath('source/'), this.destinationPath(this.sourcePath));
     this.fs.copyTpl(this.templatePath('source/assets/styles/main.scss'), this.destinationPath('source/assets/styles/main.scss'), tplData);
-    this.fs.copy(this.templatePath('.babelrc'), this.destinationPath('.babelrc'));
-    this.fs.copy(this.templatePath('.editorconfig'), this.destinationPath('.editorconfig'));
-    this.fs.copy(this.templatePath('.eslintrc.json'), this.destinationPath('.eslintrc.json'));
-    this.fs.copy(this.templatePath('.gitignore'), this.destinationPath('.gitignore'));
-    this.fs.copy(this.templatePath('.stylelintrc.json'), this.destinationPath('.stylelintrc.json'));
+    this.fs.copy(this.templatePath('babelrc'), this.destinationPath('.babelrc'));
+    this.fs.copy(this.templatePath('editorconfig'), this.destinationPath('.editorconfig'));
+    this.fs.copy(this.templatePath('eslintrc.json'), this.destinationPath('.eslintrc.json'));
+    this.fs.copy(this.templatePath('gitignore'), this.destinationPath('.gitignore'));
+    this.fs.copy(this.templatePath('stylelintrc.json'), this.destinationPath('.stylelintrc.json'));
     this.fs.copy(this.templatePath('browserslist'), this.destinationPath('browserslist'));
     this.fs.writeJSON(this.destinationPath('config.json'), tplData.projectConfig);
     this.fs.copy(this.templatePath('package.json'), this.destinationPath('package.json'));

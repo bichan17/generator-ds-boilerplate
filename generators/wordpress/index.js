@@ -9,8 +9,8 @@ module.exports = class extends Generator {
   }
 
   configuring() {
-    this.fs.copy(this.templatePath('.editorconfig'), this.destinationPath(this.options.publicPath + '.editorconfig'));
-    this.fs.copy(this.templatePath('.gitignore'), this.destinationPath(this.options.publicPath + '.gitignore'));
+    this.fs.copy(this.templatePath('editorconfig'), this.destinationPath(this.options.publicPath + '.editorconfig'));
+    this.fs.copy(this.templatePath('gitignore'), this.destinationPath(this.options.publicPath + '.gitignore'));
     this.fs.copy(this.templatePath('composer.json'), this.destinationPath('composer.json'));
   }
 

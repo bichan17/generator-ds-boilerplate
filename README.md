@@ -9,6 +9,6 @@ npm link
 ```
 
 ```bash
-yo ds-boilerplate project-name
-cd project-name
+cd /path/to/project-directory
+yo ds-boilerplate
 ```
