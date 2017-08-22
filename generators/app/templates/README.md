@@ -3,6 +3,7 @@
 ## Requirements
 - [Librarian-puppet](https://github.com/voxpupuli/librarian-puppet)
 - [Node.js](https://nodejs.org/en/)
+- [Puppet](https://puppet.com/)
 - [Sass](http://sass-lang.com/)
 - [Vagrant](https://www.vagrantup.com/)
 - [VirtualBox](https://www.virtualbox.org/)
