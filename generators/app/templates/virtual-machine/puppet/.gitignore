@@ -1,0 +1,12 @@
+# Created by https://www.gitignore.io/api/puppet-librarian
+
+### puppet-librarian ###
+# puppet-librarian - https://github.com/rodjek/librarian-puppet
+.tmp/
+# modules/
+
+# End of https://www.gitignore.io/api/puppet-librarian
+
+.librarian/
+modules/*
+!modules/.keep

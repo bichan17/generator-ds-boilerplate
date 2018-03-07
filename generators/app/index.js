@@ -1,291 +1,275 @@
 const _ = require('lodash');
-const Generator = require('yeoman-generator');
 const path = require('path');
+const request = require('request');
+const Generator = require('yeoman-generator');
+
+const generateQuestions = require('./generateQuestions');
 
 module.exports = class extends Generator {
   initializing() {
-    this.answers = undefined;
-    this.projectConfig = {
-      hostname: undefined,
-      aliases: [],
-      paths: {},
-      vagrant: {
-        settings: {
-          memory: 1024,
-          // cpus: 2
-        },
-        network: {
-          privateIp: '192.168.50.' + _.random(255)
-        },
-        vhosts: [],
-        packages: [
-          {
-            name: 'apache',
-            version: 2.4
-          },
-          {
-            name: 'mysql',
-            version: 5.7,
-            // databases: [
-            //   "VAGRANTDB1",
-            //   "VAGRANTDB2"
-            // ],
-            // rootPassword: "customVagrantPassword"
-          },
-          {
-            name: 'nginx',
-            version: 1.10
-          },
-          {
-            name: 'php',
-            version: 7.1,
-            // extensions: [
-            //   "php-common",
-            //   "php-mysqlnd",
-            //   "php-mcrypt",
-            //   "php-gd"
-            // ]
-          },
-          {
-            name: 'node',
-            version: 6,
-            globalPackages: [
-              "bower",
-              "gulp"
-            ]
-          }
-        ],
-        // systemctl: {
-        //   start: [
-        //     "redis"
-        //   ],
-        //   enable: [
-        //     "redis.service"
-        //   ]
-        // }
-      }
+    this.props = {
+      name: _.kebabCase(this.appname),
+      framework: 'none',
+      hostname: null,
+      themeName: null,
+      wordpressThemePrefix: null,
+      wordpressPlugins: null,
+      virtualMachine: null,
+      databaseName: null,
+      buildTool: 'npm scripts',
+      libraries: null,
+      target: 'web',
+      hasComposer: false
     };
-    this.npmDependencies = [];
-    this.npmDevDependencies = [
-      'babel-core',
-      'babel-preset-env',
-      'eslint',
-      'stylelint',
-      'stylelint-config-standard'
-    ];
-    this.sourcePath = 'source/';
-    this.publicPath = 'public/';
-    this.assetsPath = undefined;
+    this.answers = null;
+    this.paths = {};
+    this.templateData = {};
   }
 
   prompting() {
-    const questions = [
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Project name',
-        default: _.kebabCase(this.appname)
-      },
-      {
-        type: 'input',
-        name: 'hostname',
-        message: 'Hostname',
-        default: answers => _.kebabCase(answers.name) + '.localhost'
-      },
-      {
-        type: 'list',
-        name: 'backend',
-        message: 'Backend',
-        choices: [
-          // 'Drupal',
-          // 'Laravel',
-          // 'Magento',
-          'WordPress',
-          'none'
-        ],
-        default: 'none'
-      },
-      {
-        when: answers => answers.backend === 'WordPress',
-        type: 'input',
-        name: 'theme-name',
-        message: 'Theme Name',
-        default: answers => _.kebabCase(answers.name)
-      },
-      {
-        when: answers => answers.backend === 'WordPress',
-        type: 'checkbox',
-        name: 'wordpress-plugins',
-        message: 'WordPress Plugins',
-        choices: [
-          'ACF',
-          'Adminimize',
-          'Akismet',
-          'Jetpack',
-          'Redirection',
-          'Relevanssi',
-          'W3 Total Cache',
-          'WPML',
-          'Yoast'
-        ],
-        default: [
-          'ACF',
-          'Adminimize',
-          'Akismet',
-          'Jetpack',
-          'Redirection',
-          'W3 Total Cache',
-          'Yoast'
-        ]
-      },
-      {
-        type: 'list',
-        name: 'task-runner',
-        message: 'Task Runner',
-        choices: [
-          'Gulp',
-          'npm scripts'
-        ],
-        default: 'Gulp'
-      },
-      {
-        type: 'list',
-        name: 'module-loader',
-        message: 'Module Loader',
-        choices: [
-          'Browserify',
-          'Webpack'
-        ],
-        default: 'Webpack'
-      },
-      // {
-      //   type: 'list',
-      //   name: 'frontend',
-      //   message: 'Frontend',
-      //   choices: [
-      //     'Angular',
-      //     'React',
-      //     'none'
-      //   ],
-      //   default: 'none'
-      // },
-      {
-        type: 'checkbox',
-        name: 'libraries',
-        message: 'libraries',
-        choices: [
-          'autotrack',
-          'font-awesome',
-          'jquery',
-          'js-cookie',
-          'lodash',
-          'modernizr',
-          'normalize.css',
-          'picturefill',
-          'query-string',
-          'url',
-          'webfontloader'
-        ],
-        default: [
-          'autotrack',
-          'normalize.css',
-          'picturefill'
-        ]
-      }
-    ];
-
-    return this.prompt(questions).then((answers) => {
+    const questions = generateQuestions(this.appname);
+    return this.prompt(questions).then(answers => {
       this.answers = answers;
     });
   }
 
+  _configureProps() {
+    this.props = _.extend(this.props, this.answers);
+
+    if (this.props.virtualMachine) {
+      this.props.privateIp = `192.168.${_.random(255)}.${_.random(255)}`;
+    }
+
+    // configure target prop
+    switch (this.props.framework) {
+      case 'Node Module':
+        this.props.target = 'node';
+        break;
+      case 'none':
+      default:
+        this.props.target = 'web';
+        break;
+    }
+
+    // configure framework props
+    switch (this.props.framework) {
+      case 'WordPress':
+        this.props.wordpressThemePrefix = _.snakeCase(this.props.themeName);
+        this.props.hasComposer = true;
+        break;
+    }
+  }
+
+  _configurePaths() {
+    // configure source/destination paths
+    switch (this.props.framework) {
+      case 'Node Module':
+        this.paths.source = 'source/';
+        this.paths.destination = 'module/';
+        break;
+      case 'WordPress':
+      case 'none':
+        this.paths.source = 'web/';
+        this.paths.destination = this.paths.source;
+        break;
+      default:
+        this.paths.source = 'source/';
+        this.paths.destination = 'build/';
+        break;
+    }
+
+    // configure framework paths
+    switch (this.props.framework) {
+      case 'WordPress':
+        this.paths.plugins = path.join(this.paths.destination, 'wp-content/plugins/');
+        this.paths.theme = path.join(this.paths.destination, 'wp-content/themes/', this.props.themeName);
+        break;
+    }
+
+    // configure target paths
+    switch (this.props.target) {
+      case 'node':
+        this.paths.app = {
+          filename: 'index.js',
+          source: path.join(this.paths.source, 'index.js'),
+          destination: path.join(this.paths.destination),
+          watch: path.join(this.paths.source, 'index.js'),
+          lint: path.join(this.paths.source, 'index.js')
+        };
+        this.paths.assets = {
+          scripts: this.paths.app
+        };
+        break;
+      case 'web':
+      default:
+        switch (this.props.framework) {
+          case 'WordPress':
+            this.paths.assets = {
+              source: path.join(this.paths.theme, 'assets/'),
+              destination: path.join(this.paths.theme, 'assets/')
+            };
+            break;
+          default:
+            this.paths.assets = {
+              source: path.join(this.paths.source, 'assets/'),
+              destination: path.join(this.paths.destination, 'assets/')
+            };
+            break;
+        }
+        this.paths.assets.images = {
+          source: path.join(this.paths.assets.source, 'images/**/*'),
+          destination: path.join(this.paths.assets.destination, 'images/')
+        };
+        this.paths.assets.scripts = {
+          filename: 'main.bundle.js',
+          source: path.join(this.paths.assets.source, 'scripts/main.js'),
+          destination: path.join(this.paths.assets.destination, 'scripts/'),
+          watch: path.join(this.paths.assets.source, 'scripts/**/*.js'),
+          lint: path.join(this.paths.source, 'index.js')
+        };
+        this.paths.assets.styles = {
+          source: path.join(this.paths.assets.source, 'styles/main.scss'),
+          destination: path.join(this.paths.assets.destination, this.props.buildTool === 'npm scripts' ? 'styles/main.css' : 'styles/'),
+          watch: path.join(this.paths.assets.source, 'styles/**/*.scss'),
+          lint: path.join(this.paths.assets.source, 'styles/**/*.scss')
+        };
+        break;
+    }
+  }
+
+  _configureTemplateData() {
+    this.templateData.config = this.props;
+    this.templateData.paths = this.paths;
+  }
+
   configuring() {
-    if (this.answers.backend === 'WordPress') {
-      this.projectConfig.paths.pluginsPath = path.join(this.publicPath, 'wp-content/plugins/');
-      this.projectConfig.paths.themePath = path.join(this.publicPath, 'wp-content/themes', this.answers['theme-name']);
-      this.assetsPath = path.join(this.projectConfig.paths.themePath, 'assets/');
-      this.projectConfig.paths.assetsPath = this.assetsPath;
-    } else {
-      this.assetsPath = this.publicPath;
-      this.projectConfig.paths.assetsPath = this.assetsPath;
+    this._configureProps();
+    this._configurePaths();
+    this._configureTemplateData();
+  }
+
+  _writeTemplates() {
+    // write root templates
+    this.fs.copyTpl(
+      this.templatePath('root'),
+      this.destinationPath(),
+      this.templateData,
+      {},
+      {globOptions: {dot:true}}
+    );
+
+    // write target templates
+    switch (this.props.target) {
+      case 'web':
+        this.fs.copy(this.templatePath('.browserslistrc'), this.destinationPath('.browserslistrc'));
+        this.fs.copy(this.templatePath('.stylelintrc.json'), this.destinationPath('.stylelintrc.json'));
+        this.fs.copyTpl(
+          this.templatePath('assets'),
+          this.destinationPath(this.paths.assets.source),
+          this.templateData,
+          {},
+          {globOptions: {dot:true}}
+        );
+        break;
     }
 
-    this.projectConfig.paths = {
-      source: this.sourcePath,
-      public: this.publicPath,
-      images: {
-        src: path.join(this.sourcePath, 'assets/images/**/*'),
-        dest: path.join(this.assetsPath, 'images/'),
-        watch: path.join(this.sourcePath, 'assets/images/**/*')
-      },
-      scripts: {
-        filename: 'main.js',
-        src: path.join(this.sourcePath, 'assets/scripts/main.js'),
-        dest: path.join(this.assetsPath, 'scripts/'),
-        watch: path.join(this.sourcePath, 'assets/scripts/**/*.js')
-      },
-      styles: {
-        src: path.join(this.sourcePath, 'assets/styles/main.scss'),
-        dest: path.join(this.assetsPath, 'styles/'),
-        watch: path.join(this.sourcePath, 'assets/styles/**/*.scss')
-      }
+    // write 'none' framework templates
+    switch (this.props.framework) {
+      case 'none':
+        this.fs.copyTpl(
+          this.templatePath('source'),
+          this.destinationPath(this.paths.source),
+          this.templateData,
+          {},
+          {globOptions: {dot:true}}
+        );
+        break;
+    }
+
+    // write virtual machine templates
+    if (this.props.virtualMachine) {
+      this.fs.copyTpl(
+        this.templatePath('virtual-machine'),
+        this.destinationPath(),
+        this.templateData,
+        {},
+        {globOptions: {dot:true}}
+      );
+    }
+  }
+
+  _writeRcFiles() {
+    const babelrc = {
+      presets: ['env']
     };
-
-    this.projectConfig.hostname = this.answers.hostname;
-    if (this.projectConfig.hostname.startsWith('www.')) {
-      this.projectConfig.aliases.push(this.projectConfig.hostname.slice(4));
-    } else {
-      this.projectConfig.aliases.push('www.' + this.answers.hostname);
+    const eslintrc = {};
+    switch (this.props.target) {
+      case 'node':
+        eslintrc.env = {node: true};
+        break;
+      case 'web':
+      default:
+        eslintrc.env = {browser: true};
+        break;
     }
-    this.projectConfig.vagrant.vhosts.push({
-      hostname: this.projectConfig.hostname,
-      aliases: this.projectConfig.aliases,
-      path: this.publicPath
+    switch (this.props.framework) {
+      case 'Web Application (React)':
+        babelrc.presets.push('es2015');
+        babelrc.presets.push('react');
+        eslintrc.env.node = true;
+        eslintrc.extends = [
+          'eslint:recommended',
+          'plugin:react/recommended'
+        ];
+        eslintrc.parserOptions = {
+          ecmaFeatures: {jsx: true}
+        };
+        eslintrc.plugins = ['react'];
+        break;
+    }
+    this.fs.extendJSON(this.destinationPath('.babelrc'), babelrc);
+    this.fs.extendJSON(this.destinationPath('.eslintrc.json'), eslintrc);
+  }
+
+  _writeGitIgnore() {
+    const gitIgnoreTemplates = ['macos', 'node', 'sublimetext'];
+    if (this.props.hasComposer) gitIgnoreTemplates.push('composer');
+    if (this.props.target === 'web') gitIgnoreTemplates.push('sass');
+    if (this.props.virtualMachine) gitIgnoreTemplates.push('vagrant');
+    const done = this.async();
+    request.get(`https://www.gitignore.io/api/${gitIgnoreTemplates.sort().join()}`, (error, response, body) => {
+      let gitignore = body.trimLeft();
+      gitignore += '\n\n### Project ###\ntmp/\n';
+      if (this.paths.source !== this.paths.destination) {
+        gitignore += `${this.paths.destination}\n`;
+      } else if (this.props.target === 'web') {
+        const scriptBuildPath = path.join(this.paths.assets.scripts.destination, this.paths.assets.scripts.filename);
+        const styleBuildPath = this.props.buildTool === 'npm scripts'
+          ? this.paths.assets.styles.destination
+          : path.join(this.paths.assets.styles.destination, 'main.css');
+        gitignore += `${scriptBuildPath}\n`;
+        gitignore += `${styleBuildPath}\n`;
+      }
+      this.fs.write(this.destinationPath('.gitignore'), gitignore);
+      done(error);
     });
-    this.npmDependencies = _.union(this.npmDependencies, this.answers.libraries);
   }
 
   writing() {
-    const tplData = {
-      answers: this.answers,
-      projectConfig: this.projectConfig,
-      publicPath: this.publicPath,
-      sourcePath: this.sourcePath
-    };
-
-    this.fs.copy(this.templatePath('public/.htaccess'), this.destinationPath(this.publicPath + '.htaccess'));
-    this.fs.copy(this.templatePath('public/favicon.ico'), this.destinationPath(this.publicPath + 'favicon.ico'));
-    this.fs.copy(this.templatePath('public/robots.txt'), this.destinationPath(this.publicPath + 'robots.txt'));
-    if (this.answers['backend'] === 'none') {
-      this.fs.copy(this.templatePath('public/404.html'), this.destinationPath(this.publicPath + '404.html'));
-      this.fs.copy(this.templatePath('public/index.html'), this.destinationPath(this.publicPath + 'index.html'));
-      this.fs.copy(this.templatePath('public/sitemap.xml'), this.destinationPath(this.publicPath + 'sitemap.xml'));
-    }
-    this.fs.copy(this.templatePath('puppet/'), this.destinationPath('puppet/'), {globOptions: {dot: true}});
-    // this.fs.copy(this.templatePath('puppet/modules/.keep'), this.destinationPath('puppet/modules/.keep'));
-    this.fs.copyTpl(this.templatePath('puppet/environments/local/manifests/default.pp'), this.destinationPath('puppet/environments/local/manifests/default.pp'), tplData);
-    this.fs.copy(this.templatePath('source/'), this.destinationPath(this.sourcePath));
-    this.fs.copyTpl(this.templatePath('source/assets/styles/main.scss'), this.destinationPath('source/assets/styles/main.scss'), tplData);
-    this.fs.copy(this.templatePath('babelrc'), this.destinationPath('.babelrc'));
-    this.fs.copy(this.templatePath('editorconfig'), this.destinationPath('.editorconfig'));
-    this.fs.copy(this.templatePath('eslintrc.json'), this.destinationPath('.eslintrc.json'));
-    this.fs.copy(this.templatePath('gitignore'), this.destinationPath('.gitignore'));
-    this.fs.copy(this.templatePath('stylelintrc.json'), this.destinationPath('.stylelintrc.json'));
-    this.fs.copy(this.templatePath('browserslist'), this.destinationPath('browserslist'));
-    this.fs.writeJSON(this.destinationPath('config.json'), tplData.projectConfig);
-    this.fs.copy(this.templatePath('package.json'), this.destinationPath('package.json'));
-    this.fs.copyTpl(this.templatePath('README.md'), this.destinationPath('README.md'), tplData);
-    this.fs.copy(this.templatePath('Vagrantfile'), this.destinationPath('Vagrantfile'));
-
-    if (this.answers.backend === 'WordPress') {
-      this.composeWith(require.resolve('../wordpress'), tplData);
-    }
-
-    this.composeWith(require.resolve('../task-runner'), tplData);
+    this._writeTemplates();
+    this._writeRcFiles();
+    this._writeGitIgnore();
   }
 
-  install() {
-    this.npmInstall(this.npmDependencies, {'save': true});
-    this.npmInstall(this.npmDevDependencies, {'save-dev': true});
+  end() {
+    this.composeWith(require.resolve('../build-tool'), this.templateData);
+    switch (this.props.framework) {
+      case 'Node Module':
+        this.composeWith(require.resolve('../node-module'), this.templateData);
+        break;
+      case 'WordPress':
+        this.composeWith(require.resolve('../wordpress'), this.templateData);
+        break;
+    }
   }
 };

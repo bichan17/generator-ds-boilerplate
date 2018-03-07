@@ -1,0 +1,15 @@
+{
+  "config": {
+    "discard-changes": true,
+    "vendor-dir": "web/vendor"
+  },
+  "repositories": [],
+  "require": {},
+  "extra": {
+    "installer-paths": {
+      "web/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+      "web/wp-content/themes/{$name}/": ["type:wordpress-theme"]
+    },
+    "wordpress-install-dir": "web/wp"
+  }
+}

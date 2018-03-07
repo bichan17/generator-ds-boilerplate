@@ -1,6 +1,0 @@
-forge "https://forgeapi.puppetlabs.com"
-
-mod 'mayflower-php', '3.4.2'
-mod 'puppetlabs-apache', '1.11.0'
-mod 'puppetlabs-mysql', '3.10.0'
-mod 'spiette-selinux', '0.5.4'

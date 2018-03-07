@@ -1,0 +1,87 @@
+* {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* stylelint-disable declaration-block-no-shorthand-property-overrides */
+  font-size: 100%;
+  font: inherit;
+  /* stylelint-enable */
+  vertical-align: baseline;
+}
+
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+abbr[title] {
+  text-decoration: inherit;
+}
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+pre,
+code {
+  /* stylelint-disable font-family-no-duplicate-names */
+  font-family: monospace, monospace;
+  /* stylelint-enable */
+}
+
+blockquote,
+q {
+  quotes: none;
+
+  &::before,
+  &::after {
+    content: "";
+    content: none;
+  }
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  background: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: auto;
+  }
+}
+
+textarea {
+  resize: none;
+  overflow: auto;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}

@@ -1,0 +1,22 @@
+forge "https://forgeapi.puppetlabs.com"
+
+<%_ if (config.virtualMachine.includes('MongoDB')) { _%>
+mod 'puppet-mongodb', '2.1.0'
+<%_ } _%>
+<%_ if (config.virtualMachine.includes('Nginx')) { _%>
+mod 'puppet-nginx', '0.10.0'
+<%_ } _%>
+<%_ if (config.virtualMachine.includes('Node.js')) { _%>
+mod 'puppet-nodejs', '5.0.0'
+<%_ } _%>
+<%_ if (config.virtualMachine.includes('PHP')) { _%>
+mod 'puppet-php', '5.2.0'
+<%_ } _%>
+mod 'puppet-selinux', '1.5.2'
+mod 'puppet-yum', '2.2.0'
+<%_ if (config.virtualMachine.includes('Apache')) { _%>
+mod 'puppetlabs-apache', '3.0.0'
+<%_ } _%>
+<%_ if (config.virtualMachine.includes('MySQL')) { _%>
+mod 'puppetlabs-mysql', '5.2.0'
+<%_ } _%>

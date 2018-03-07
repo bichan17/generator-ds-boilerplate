@@ -1,14 +1,17 @@
 # generator-ds-boilerplate
 
-## Installation
+## Requirements
+- [Node.js](https://nodejs.org/en/)
 
-```bash
+## Installation
+```sh
 npm install -g yo
 cd generator-ds-boilerplate
 npm link
 ```
 
-```bash
+## Getting Started
+```sh
 cd /path/to/project-directory
 yo ds-boilerplate
 ```
