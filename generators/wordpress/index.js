@@ -131,7 +131,7 @@ module.exports = class extends Generator {
     request.get(`https://www.gitignore.io/api/${gitIgnoreTemplates.sort().join()}`, (error, response, body) => {
       const gitignorePath = path.join(this.options.paths.source, '.gitignore');
       let gitignore = body.trimLeft();
-      gitignore += '\n\n### Project ###\nwp-content/plugins/\nweb/wp-content/themes/twentyseventeen/\nwp/\n';
+      gitignore += '\n\n### Project ###\nwp-content/plugins/\nwp-content/themes/twentyseventeen/\nwp/\n';
       this.fs.write(this.destinationPath(gitignorePath), gitignore);
       done(error);
     });
