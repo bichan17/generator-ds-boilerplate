@@ -41,10 +41,10 @@ class { 'apache':
 }
 apache::vhost { '<%= config.hostname %>':
   port => '80',
-  docroot => '/var/www/html',
+  docroot => '/vagrant/<%= paths.destination %>',
   directories => [
     {
-      path => '/var/www/html',
+      path => '/vagrant/<%= paths.destination %>',
       options => ['Indexes', 'FollowSymLinks'],
       allow_override => ['All'],
     },
@@ -60,7 +60,7 @@ class { 'nginx':
   sendfile => 'off',
 }
 nginx::resource::server { '<%= config.hostname %>':
-  www_root => '/var/www/html',
+  www_root => '/vagrant/<%= paths.destination %>',
 }
 <%_ } _%>
 <%_ if (config.virtualMachine.includes('MySQL')) { _%>
@@ -93,7 +93,7 @@ mongodb::db { '<%= config.databaseName %>':
 <%_ if (config.framework === 'WordPress') { _%>
 
 <%_ if (config.virtualMachine.includes('Apache') && config.operatingSystemDistribution === 'centos/7') { _%>
-file { '/var/www/html/wp-content/uploads':
+file { '/vagrant/<%= paths.destination %>/wp-content/uploads':
   ensure => directory,
   owner => 'apache',
   group => 'apache',
