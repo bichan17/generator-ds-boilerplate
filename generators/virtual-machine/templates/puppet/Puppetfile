@@ -12,8 +12,10 @@ mod 'puppet-nodejs', '5.0.0'
 <%_ if (config.virtualMachine.includes('PHP')) { _%>
 mod 'puppet-php', '5.2.0'
 <%_ } _%>
+<%_ if (config.operatingSystemDistribution === 'centos/7') { _%>
 mod 'puppet-selinux', '1.5.2'
 mod 'puppet-yum', '2.2.0'
+<%_ } _%>
 <%_ if (config.virtualMachine.includes('Apache')) { _%>
 mod 'puppetlabs-apache', '3.0.0'
 <%_ } _%>

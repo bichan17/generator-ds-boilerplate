@@ -2,9 +2,11 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "centos/7"
+  config.vm.box = "<%= config.operatingSystemDistribution %>"
   config.vm.network "private_network", ip: "<%= config.privateIp %>"
-  config.vm.synced_folder "./<%= paths.destination %>", "/var/www/html"
+  <%_ if (config.operatingSystemDistribution === 'centos/7') { _%>
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  <%_ } _%>
   config.vm.hostname = "<%= config.hostname %>"
   # config.hostsupdater.aliases = []
   config.vm.provider "virtualbox" do |vb|

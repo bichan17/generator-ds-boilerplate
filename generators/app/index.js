@@ -15,6 +15,7 @@ module.exports = class extends Generator {
       wordpressThemePrefix: null,
       wordpressPlugins: null,
       virtualMachine: null,
+      operatingSystemDistribution: null,
       databaseName: null,
       buildTool: 'npm scripts',
       libraries: null,
@@ -35,10 +36,6 @@ module.exports = class extends Generator {
 
   _configureProps() {
     this.props = _.extend(this.props, this.answers);
-
-    if (this.props.virtualMachine) {
-      this.props.privateIp = `192.168.${_.random(255)}.${_.random(255)}`;
-    }
 
     // configure target prop
     switch (this.props.framework) {
@@ -185,17 +182,6 @@ module.exports = class extends Generator {
         );
         break;
     }
-
-    // write virtual machine templates
-    if (this.props.virtualMachine) {
-      this.fs.copyTpl(
-        this.templatePath('virtual-machine'),
-        this.destinationPath(),
-        this.templateData,
-        {},
-        {globOptions: {dot:true}}
-      );
-    }
   }
 
   _writeRcFiles() {
@@ -263,6 +249,9 @@ module.exports = class extends Generator {
 
   end() {
     this.composeWith(require.resolve('../build-tool'), this.templateData);
+    if (this.props.virtualMachine) {
+      this.composeWith(require.resolve('../virtual-machine'), this.templateData);
+    }
     switch (this.props.framework) {
       case 'Node Module':
         this.composeWith(require.resolve('../node-module'), this.templateData);

@@ -103,6 +103,31 @@ function generateQuestions(appname) {
       }
     },
     {
+      when: answers => !['Shopify', 'Node Module'].includes(answers.framework),
+      type: 'list',
+      name: 'operatingSystemDistribution',
+      message: 'Operating System Distribution',
+      choices: [
+        {
+          name: 'Ubuntu 16 (Xenial Xerus) (PHP 7.0, MySQL 5.7)',
+          value: 'ubuntu/xenial64',
+          short: 'Ubuntu 16'
+        },
+        {
+          name: 'Ubuntu 14 (Trust Tahr) (PHP 5.5, MySQL 5.6)',
+          value: 'ubuntu/trusty64',
+          short: 'Ubuntu 14'
+        },
+        {
+          name: 'Centos 7 (PHP 5.6, MariaDB 5.5)',
+          value: 'centos/7',
+          short: 'Centos 7'
+        },
+        {type: 'separator'}
+      ],
+      default: 'ubuntu/xenial64'
+    },
+    {
       when: answers => answers.virtualMachine && (answers.virtualMachine.includes('MongoDB') || answers.virtualMachine.includes('MySQL')),
       type: 'input',
       name: 'databaseName',
