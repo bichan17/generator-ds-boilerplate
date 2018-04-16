@@ -52,6 +52,7 @@ apache::vhost { '<%= config.hostname %>':
 }
 <%_ if (config.virtualMachine.includes('PHP')) { _%>
 include apache::mod::php
+include apache::mod::rewrite
 <%_ } _%>
 <%_ } _%>
 <%_ if (config.virtualMachine.includes('Nginx')) { _%>
