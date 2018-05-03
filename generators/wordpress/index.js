@@ -116,7 +116,7 @@ module.exports = class extends Generator {
     };
     this.fs.copyTpl(
       this.templatePath('.env.example'),
-      this.destinationPath(path.join(this.options.paths.source, '.env')),
+      this.destinationPath(path.join(this.options.paths.source, '.env.example')),
       _.extend(this.options, {salts: salts})
     );
     this.fs.copy(
