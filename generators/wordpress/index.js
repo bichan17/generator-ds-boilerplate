@@ -17,7 +17,7 @@ module.exports = class extends Generator {
         }
       ]
     };
-    this.composerDependencies = ['johnpbloch/wordpress', 'vlucas/phpdotenv', 'wpackagist-theme/twentyseventeen'];
+    this.composerDependencies = ['johnpbloch/wordpress', 'vlucas/phpdotenv', 'wpackagist-theme/twentyseventeen', 'slowprog/composer-copy-file'];
   }
 
   configuring() {
@@ -54,6 +54,7 @@ module.exports = class extends Generator {
           this.composerDependencies.push('wpml/sitepress-multilingual-cms');
           this.composerDependencies.push('wpml/wpml-string-translation');
           this.composerDependencies.push('wpml/wpml-sticky-links');
+          this.composerDependencies.push('wpml/wpml-translation-management');
           this.composerDependencies.push('wpml/wpml-media-translation');
           if (this.options.config.wordpressPlugins.includes('ACF')) {
             this.composerDependencies.push('wpml/acfml');
@@ -131,7 +132,15 @@ module.exports = class extends Generator {
     request.get(`https://www.gitignore.io/api/${gitIgnoreTemplates.sort().join()}`, (error, response, body) => {
       const gitignorePath = path.join(this.options.paths.source, '.gitignore');
       let gitignore = body.trimLeft();
-      gitignore += '\n\n### Project ###\nwp-content/plugins/\nwp-content/themes/twentyseventeen/\nwp/\n';
+      gitignore += '\n\n### Project ###\nwp-content/plugins/\nwp-content/themes/twentyseventeen/\n';
+      gitignore += `
+/*
+!wp-content/
+wp-content/*
+!wp-content/themes/
+wp-content/themes/*
+!${this.options.paths.theme.replace(this.options.paths.source, '')}/
+`;
       this.fs.write(this.destinationPath(gitignorePath), gitignore);
       done(error);
     });
