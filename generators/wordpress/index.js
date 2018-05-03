@@ -115,7 +115,7 @@ module.exports = class extends Generator {
       NONCE_SALT: crypto.randomBytes(32).toString('hex')
     };
     this.fs.copyTpl(
-      this.templatePath('.env'),
+      this.templatePath('.env.example'),
       this.destinationPath(path.join(this.options.paths.source, '.env')),
       _.extend(this.options, {salts: salts})
     );
