@@ -28,7 +28,7 @@ npm install
 npm run build
 <%_ if (config.virtualMachine) { _%>
 (cd puppet/ && librarian-puppet install)
-vagrant plugin install vagrant-hostsupdater vagrant plugin install vagrant-vbguest
+vagrant plugin install vagrant-hostsupdater vagrant-plugin-install vagrant-vbguest
 vagrant up
 <%_ } _%>
 ```
