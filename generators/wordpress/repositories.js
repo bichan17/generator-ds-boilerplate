@@ -63,17 +63,17 @@ exports.wpml = [
     }
   },
   {
-      "type": "package",
-      "package": {
-        "name": "wpml/wpml-translation-management",
-        "version": "2.5.2",
-        "type": "wordpress-plugin",
-        "dist": {
-          "type": "zip",
-          "url": "https://wpml.org/?download=6094&user_id=63779&subscription_key=af715b8d5ede3c8e82c4993126dec135&t=1520351624&version=2.5.2"
-        }
+    'type': 'package',
+    'package': {
+      'name': 'wpml/wpml-translation-management',
+      'version': '2.5.2',
+      'type': 'wordpress-plugin',
+      'dist': {
+        'type': 'zip',
+        'url': 'https://wpml.org/?download=6094&user_id=63779&subscription_key=af715b8d5ede3c8e82c4993126dec135&t=1520351624&version=2.5.2'
       }
     }
+  }
 ];
 
 exports.wpmlAcf = [
