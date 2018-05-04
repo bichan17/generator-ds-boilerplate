@@ -218,7 +218,7 @@ module.exports = class extends Generator {
   }
 
   _writeGitIgnore() {
-    const gitIgnoreTemplates = ['macos', 'node', 'sublimetext'];
+    const gitIgnoreTemplates = ['macos', 'node', 'sublimetext', 'intellij', 'phpstorm'];
     if (this.props.hasComposer) gitIgnoreTemplates.push('composer');
     if (this.props.target === 'web') gitIgnoreTemplates.push('sass');
     if (this.props.virtualMachine) gitIgnoreTemplates.push('vagrant');
