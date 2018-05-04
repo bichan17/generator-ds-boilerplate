@@ -28,7 +28,9 @@ class { '::php':
 <%_ } _%>
 <%_ if (config.virtualMachine.includes('Node.js')) { _%>
 
-class { 'nodejs': }
+class { 'nodejs':
+  version => 'lts',
+}
 <%_ } _%>
 <%_ if (config.virtualMachine.includes('Apache')) { _%>
 
