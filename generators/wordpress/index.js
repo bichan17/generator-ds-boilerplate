@@ -135,6 +135,7 @@ module.exports = class extends Generator {
       gitignore += '\n\n### Project ###\nwp-content/plugins/\nwp-content/themes/twentyseventeen/\n';
       gitignore += `
 /*
+!.gitignore
 !wp-content/
 wp-content/*
 !wp-content/themes/
