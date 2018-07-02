@@ -1,15 +1,26 @@
 {
   "config": {
     "discard-changes": true,
-    "vendor-dir": "web/vendor"
+    "vendor-dir": "html/vendor"
   },
   "repositories": [],
   "require": {},
+  "scripts": {
+      "post-install-cmd": [
+          "SlowProg\\CopyFile\\ScriptHandler::copy"
+      ],
+      "post-update-cmd": [
+          "SlowProg\\CopyFile\\ScriptHandler::copy"
+      ]
+  },
   "extra": {
     "installer-paths": {
-      "web/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
-      "web/wp-content/themes/{$name}/": ["type:wordpress-theme"]
+      "html/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+      "html/wp-content/themes/{$name}/": ["type:wordpress-theme"]
     },
-    "wordpress-install-dir": "web/wp"
+    "wordpress-install-dir": "tmp/wp",
+    "copy-file": {
+      "tmp/wp/": "html/"
+    }
   }
 }

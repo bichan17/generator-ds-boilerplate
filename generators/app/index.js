@@ -66,7 +66,7 @@ module.exports = class extends Generator {
         break;
       case 'WordPress':
       case 'none':
-        this.paths.source = 'web/';
+        this.paths.source = 'html/';
         this.paths.destination = this.paths.source;
         break;
       default:
@@ -218,13 +218,14 @@ module.exports = class extends Generator {
   }
 
   _writeGitIgnore() {
-    const gitIgnoreTemplates = ['macos', 'node', 'sublimetext'];
+    const gitIgnoreTemplates = ['macos', 'node', 'sublimetext', 'intellij', 'phpstorm'];
     if (this.props.hasComposer) gitIgnoreTemplates.push('composer');
     if (this.props.target === 'web') gitIgnoreTemplates.push('sass');
     if (this.props.virtualMachine) gitIgnoreTemplates.push('vagrant');
     const done = this.async();
     request.get(`https://www.gitignore.io/api/${gitIgnoreTemplates.sort().join()}`, (error, response, body) => {
       let gitignore = body.trimLeft();
+      gitignore += '\n\n### Domani ###\n*.sql\n.pyc';
       gitignore += '\n\n### Project ###\ntmp/\n';
       if (this.paths.source !== this.paths.destination) {
         gitignore += `${this.paths.destination}\n`;
