@@ -27,7 +27,7 @@ function custom_upload_mimes($existing_mimes = array()) {
 add_filter('upload_mimes', 'custom_upload_mimes');
 
 function <%= config.wordpressThemePrefix %>_scripts() {
-	wp_enqueue_style('<%= config.themeName %>-style', get_stylesheet_uri(), array(), null);
+	wp_enqueue_style('<%= config.themeName %>-style', get_theme_file_uri('/assets/styles/main.css'), array(), null);
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('<%= config.themeName %>-script', get_theme_file_uri('/assets/scripts/main.bundle.js'), array('jquery'), null, true);
 }
