@@ -9,7 +9,7 @@
     "lint": "eslint generators/"
   },
   "dependencies": {
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.13",
     "request": "^2.83.0",
     "yeoman-generator": "^2.0.3"
   },
